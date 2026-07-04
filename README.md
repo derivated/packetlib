@@ -2,6 +2,9 @@
 
 `packetlib` is a Python library designed to evaluate the amount of time between HTTPS requests received on a server. It provides a simple Python interface to orchestrate and execute highly optimized request-sending routines implemented in C++.
 
+## LLM Use
+This repository contains LLM-generated code. All C++ code except for mock.cpp is human-written.
+
 ## Features
 
 - **High Performance**: Outsources the core networking logic to compiled C++ methods.
