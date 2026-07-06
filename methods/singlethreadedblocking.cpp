@@ -1,3 +1,4 @@
+// compile_flags: -lcurl
 #include <iostream>
 #include <vector>
 #include <string>
@@ -6,7 +7,6 @@
 #include <cstring>
 #include <chrono>
 
-// compile_flags: -lcurl
 
 extern "C" {
     struct response_timestamp {
@@ -87,7 +87,7 @@ extern "C" {
                 delete r_t.response;
             }
 
-            std::cout << std::endl;
+            //std::cout << std::endl;
 
             curl_easy_cleanup(curl);
         }
