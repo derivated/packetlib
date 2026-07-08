@@ -1,6 +1,6 @@
 # packetlib
 
-`packetlib` is a Python library designed to evaluate the amount of time between HTTPS requests received on a server. It provides a simple Python interface to orchestrate and execute highly optimized request-sending routines implemented in C++.
+`packetlib` is a Python library designed to send bulk HTTPS requests using various methods. It provides a simple Python interface to orchestrate and execute highly optimized request-sending routines implemented in C++.
 
 ## LLM Use
 This repository contains LLM-generated code. All C++ code except for mock.cpp is human-written.
@@ -113,16 +113,6 @@ By default, the library compiles all C++ files with `-O3 -shared -fPIC -std=c++1
 ```cpp
 // compile_flags: -lpthread
 ```
-
-### 4. Important Security & SSL Considerations
-> [!IMPORTANT]
-> The target server does not have a valid SSL certificate. Therefore, all custom C++ implementations **must trust HTTPS responses without verification**.
->
-> If using `libcurl`, you must configure:
-> ```cpp
-> curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-> curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-> ```
 
 ---
 
