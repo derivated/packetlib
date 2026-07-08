@@ -1,11 +1,6 @@
-#include <iostream>
 #include <vector>
-#include <string>
 #include <thread>
-#include <mutex>
 #include <curl/curl.h>
-#include <memory>
-#include <chrono>
 #include <cstring>
 
 
@@ -112,7 +107,6 @@ extern "C" {
             for (int i = 0; i < count; i++) {
                 response_timestamp *r_t = r_ts[i];
                 if (r_t->response == nullptr) {
-                    std::cout << "skipped" << std::endl;
                     timestamps[i] = -1;
                     response_lengths[i] = 11;
                     char *no_res_msg = "No Response\0";

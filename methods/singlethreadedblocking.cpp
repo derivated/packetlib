@@ -1,12 +1,7 @@
 // compile_flags: -lcurl
-#include <iostream>
-#include <vector>
-#include <string>
 #include <curl/curl.h>
-#include <memory>
 #include <cstring>
 #include <chrono>
-
 
 extern "C" {
     struct response_timestamp {
