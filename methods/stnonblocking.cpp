@@ -11,7 +11,6 @@ extern "C" {
     struct response_timestamp {
         char* response;
         long long timestamp;
-        int req_num;
     };
 
     size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata) {
@@ -62,7 +61,6 @@ extern "C" {
         if (curl) {
             for (int i = 0; i < count; i++) {
                 response_timestamp *r_t = new response_timestamp;
-                r_t->req_num = i;
                 r_t->timestamp = 0;
                 r_t->response = nullptr;
                 r_ts[i] = r_t;
