@@ -13,9 +13,10 @@ extern "C" {
 
     size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata) { 
         size_t real_size = size * (nmemb);
-        response_timestamp r_t = {};
+        response_timestamp *r_t = (response_timestamp*) userdata;
+
         long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        r_t.timestamp = ms;
+        r_t->timestamp = ms;
 
         char *copied = new char[real_size + 1];
 
@@ -23,15 +24,9 @@ extern "C" {
 
         copied[real_size] = '\0';
 
-        r_t.response = copied;
+        r_t->response = copied;
 
-        response_timestamp *r_ts = (response_timestamp*) userdata;
-
-        r_ts[completed] = r_t;
-
-        completed++;
-
-        return nmemb;
+        return real_size;
     }
 
     int execute_requests(
@@ -50,17 +45,20 @@ extern "C" {
 
         curl = curl_easy_init();
 
-        response_timestamp r_ts[count] = {};
+        response_timestamp *r_ts[count] = {};
 
         if (curl) {
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, r_ts);
             curl_easy_setopt(curl, CURLOPT_TIMEOUT, static_cast<long>(timeout_seconds));
 
 
             for (int i = 0; i < count; i++) {
+                response_timestamp *r_t = new response_timestamp;
+                r_t->timestamp = 0;
+                r_t->response = nullptr;
+                r_ts[i] = r_t;
                 curl_easy_setopt(curl, CURLOPT_URL, endpoints[i]);
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDS, bodies[i]);
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, std::strlen(bodies[i]));
@@ -69,17 +67,27 @@ extern "C" {
                 struct curl_slist* headers = nullptr;
                 headers = curl_slist_append(headers, "Content-Type: application/json");
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, r_ts[i]);
 
                 res = curl_easy_perform(curl);
             }
 
             for (int i = 0; i < count; i++) {
-                response_timestamp r_t = r_ts[i];
+                response_timestamp *r_t = r_ts[i];
+                if (r_t->response == nullptr) {
+                    timestamps[i] = -1;
+                    response_lengths[i] = 11;
+                    char *no_res_msg = "No Response\0";
+                    std::memcpy(responses[i], no_res_msg, 11);
+                    delete r_t;
+                    continue;
+                };
 
-                timestamps[i] = r_t.timestamp;
-                response_lengths[i] = std::strlen(r_t.response);
-                std::memcpy(responses[i], r_t.response, response_lengths[i]);
-                delete r_t.response;
+                timestamps[i] = r_t->timestamp;
+                response_lengths[i] = std::strlen(r_t->response);
+                std::memcpy(responses[i], r_t->response, response_lengths[i]);
+                delete[] r_t->response;
+                delete r_t;
             }
 
             //std::cout << std::endl;
