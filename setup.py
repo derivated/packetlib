@@ -11,4 +11,8 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
+    package_data={
+        "packetlib": ["methods/**/*"],
+    },
+    include_package_data=True,
 )
