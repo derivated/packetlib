@@ -57,7 +57,7 @@ bodies = [
 
 # Run the 'single_thread' C++ method (which corresponds to methods/single_thread.cpp)
 timestamps = execute(
-    method_name="single_thread",
+    method_name="singlethreadedblocking",
     endpoints=endpoints,
     bodies=bodies,
     timeout_seconds=5
@@ -73,7 +73,7 @@ If you need access to the raw response content as well as timestamps, use `execu
 from packetlib import execute_full
 
 responses, timestamps = execute_full(
-    method_name="single_thread",
+    method_name="singlethreadedblocking",
     endpoints=endpoints,
     bodies=bodies,
     timeout_seconds=5
