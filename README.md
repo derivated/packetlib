@@ -16,6 +16,15 @@ This repository contains LLM-generated code. All C++ code except for mock.cpp is
 
 ## Installation
 
+First, ensure libcurl4 and g++ are installed:
+
+Ubuntu/Debian-based systems:
+```bash
+sudo apt update
+sudo apt install build-essential
+sudo apt install libcurl4-openssl-dev
+```
+
 Install the library locally by running:
 
 ```bash
