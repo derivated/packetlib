@@ -76,7 +76,8 @@ responses, timestamps = execute_full(
     method_name="singlethreadedblocking",
     endpoints=endpoints,
     bodies=bodies,
-    timeout_seconds=5
+    timeout_seconds=5,
+    max_response_size=1024*1024 # 1MB
 )
 
 for resp, ts in zip(responses, timestamps):
