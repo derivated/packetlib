@@ -2,11 +2,12 @@
 #include <thread>
 #include <curl/curl.h>
 #include <cstring>
+#include <string>
 
 
 extern "C" {
     struct response_timestamp {
-        char* response;
+        std::string response;
         long long timestamp;
     };
 
@@ -33,16 +34,9 @@ extern "C" {
         long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         r_t->timestamp = ms;
 
-        char *copied = new char[real_size + 1];
+        r_t->response.append(ptr,real_size);
 
-        std::memcpy(copied, ptr, real_size);
-
-        copied[real_size] = '\0';
-
-        r_t->response = copied;
-
-
-        return nmemb;
+        return real_size;
     }
 
     int execute_requests(
@@ -75,8 +69,7 @@ extern "C" {
 
             for (int i = 0; i < count; i++) {
                 response_timestamp *r_t = new response_timestamp;
-                r_t->timestamp = 0;
-                r_t->response = nullptr;
+                r_t->timestamp = -1;
                 r_ts[i] = r_t;
                 curl_easy_setopt(handles[i], CURLOPT_WRITEDATA, r_ts[i]);
 
@@ -106,7 +99,7 @@ extern "C" {
 
             for (int i = 0; i < count; i++) {
                 response_timestamp *r_t = r_ts[i];
-                if (r_t->response == nullptr) {
+                if (r_t->timestamp == -1) {
                     timestamps[i] = -1;
                     response_lengths[i] = 11;
                     char *no_res_msg = "No Response\0";
@@ -117,11 +110,9 @@ extern "C" {
                 
                 timestamps[i] = r_t->timestamp;
 
-                response_lengths[i] = std::strlen(r_t->response);
+                response_lengths[i] = r_t->response.size();
 
-                std::memcpy(responses[i], r_t->response, response_lengths[i]);
-
-                delete[] r_t->response;
+                std::memcpy(responses[i], r_t->response.c_str(), response_lengths[i]);
 
                 delete r_t;
 
